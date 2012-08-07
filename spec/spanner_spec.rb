@@ -2,8 +2,9 @@ require 'spec_helper'
 
 describe Spanner do
   
-  it "should return nil for empty strings" do
+  it "should return nil for empty strings & nil" do
     Spanner.parse('').should be_nil
+    Spanner.parse(nil).should be_nil
   end
 
   it "should assume seconds" do
@@ -47,7 +48,9 @@ describe Spanner do
 end
 
 describe Spanner, "format" do
-  { 3600*24 => '1 day', 3600*24*5 => '5 days', 3620 => '1 hour 20 seconds', 175814631 => '5 years 6 months 3 weeks 1 day 16 hours 20 minutes 1 second' }.each do |input, output|
+  { 3600*24 => '1 day', 3600*24*5 => '5 days', 3620 => '1 hour 20 seconds',
+    175814631 => '5 years 6 months 3 weeks 1 day 16 hours 20 minutes 1 second',
+    nil => "", "abc" => "" }.each do |input, output|
     it "should format #{input} as #{output}" do
       Spanner.format(input).should == output
     end

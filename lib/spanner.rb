@@ -96,6 +96,8 @@ class Spanner
   end
   
   def format(distance)
+    distance = distance.to_i
+    
     parts = {}
     parts[:years], distance = distance.divmod(31_556_926)
     parts[:months], distance = distance.divmod(length_of_month)
