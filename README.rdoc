@@ -2,6 +2,14 @@
 
 Easy way to parse natural language time spans as periods expressed in seconds. Supports float point notions of spans as well.
 
+== Installation
+
+  gem install spanner-lfittl
+  
+or add this to your Gemfile:
+  
+  gem 'spanner-lfittl', :require => 'spanner'
+
 == Usage
 
   require 'spanner'
