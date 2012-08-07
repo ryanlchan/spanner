@@ -1,4 +1,4 @@
-require ~'spec_helper'
+require 'spec_helper'
 
 describe Spanner do
   
@@ -8,6 +8,7 @@ describe Spanner do
 
   it "should assume seconds" do
     Spanner.parse('1').should == 1
+    Spanner.parse(1).should == 1
   end
 
   #simple
@@ -18,7 +19,14 @@ describe Spanner do
   end
 
   #complex
-  { '1m23s' => 83 }.each do |input, output|
+  { '1m23s' => 83, '3h20min' => 3600*3+20*60 }.each do |input, output|
+    it "should parse #{input} and return #{output}" do
+      Spanner.parse(input).should == output
+    end
+  end
+  
+  #singular
+  { '1 day' => 3600*24, '5 day' => 3600*24*5, '1 hour' => 3600 }.each do |input, output|
     it "should parse #{input} and return #{output}" do
       Spanner.parse(input).should == output
     end
@@ -36,5 +44,12 @@ describe Spanner do
   it "should accept special :now as from option" do
     Spanner.parse('23s', :from => :now).should == Time.new.to_i + 23
   end
+end
 
+describe Spanner, "format" do
+  { 3600*24 => '1 day', 3600*24*5 => '5 days', 3620 => '1 hour 20 seconds', 175814631 => '5 years 6 months 3 weeks 1 day 16 hours 20 minutes 1 second' }.each do |input, output|
+    it "should format #{input} as #{output}" do
+      Spanner.format(input).should == output
+    end
+  end
 end

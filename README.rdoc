@@ -11,4 +11,14 @@ Easy way to parse natural language time spans as periods expressed in seconds. S
   
   Spanner.parse('23 hours 12 minutes')
   => 83520
+  
+  Spanner.format(83520)
+  => '23 hours 12 minutes'
+  
+== Authors
 
+Original author:
+Joshua Hull <joshbuddy@gmail.com>
+
+Newer contributions:
+Lukas Fittl <lukas@fittl.com>

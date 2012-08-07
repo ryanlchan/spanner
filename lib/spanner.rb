@@ -1,4 +1,5 @@
 require 'date'
+require 'active_support/inflector'
 
 class Spanner
 
@@ -6,6 +7,10 @@ class Spanner
 
   def self.parse(str, opts = nil)
     Spanner.new(opts).parse(str)
+  end
+  
+  def self.format(distance, opts = nil)
+    Spanner.new(opts).format(distance)
   end
   
   attr_reader :value, :raise_on_error, :from
@@ -44,7 +49,7 @@ class Spanner
   def parse(value)
     parts = []
     part_contextualized = nil
-    value.scan(/[\+\-]?(?:\d*\.\d+|\d+)|[a-z]+/i).each do |part|
+    value.to_s.scan(/[\+\-]?(?:\d*\.\d+|\d+)|[a-z]+/i).each do |part|
       part_as_float = Float(part) rescue nil
       if part_as_float
         parts << part_as_float
@@ -61,23 +66,24 @@ class Spanner
         
         # part is context
         multiplier = case part
-        when 's', 'sec', 'seconds'  then 1
-        when 'h', 'hours', 'hrs'    then 3600
-        when 'm', 'min', 'minutes'  then 60
-        when 'd', 'days'            then 86_400
-        when 'w', 'wks', 'weeks'    then 604_800
-        when 'months', 'month', 'M' then length_of_month
-        when 'years', 'y'           then 31_556_926
-        when /\As/                  then 1
-        when /\Am/                  then 60
-        when /\Ah/                  then 86_400
-        when /\Aw/                  then 604_800
-        when /\AM/                  then length_of_month
-        when /\Ay/                  then 31_556_926
+        when 's', 'sec', 'second', 'seconds'  then 1
+        when 'h', 'hour', 'hours', 'hrs'      then 3600
+        when 'm', 'min', 'minute', 'minutes'  then 60
+        when 'd', 'day', 'days'               then 86_400
+        when 'w', 'wks', 'week', 'weeks'      then 604_800
+        when 'months', 'month', 'M'           then length_of_month
+        when 'years', 'year', 'y'             then 31_556_926
+        when /\As/                            then 1
+        when /\Am/                            then 60
+        when /\Ah/                            then 3600
+        when /\Ad/                            then 86_400
+        when /\Aw/                            then 604_800
+        when /\AM/                            then length_of_month
+        when /\Ay/                            then 31_556_926
         end
         
         part_contextualized = part
-        parts << (parts.pop * multiplier)
+        parts << (parts.pop * multiplier) if multiplier
       end
     end
     
@@ -89,4 +95,21 @@ class Spanner
     end
   end
   
+  def format(distance)
+    parts = {}
+    parts[:years], distance = distance.divmod(31_556_926)
+    parts[:months], distance = distance.divmod(length_of_month)
+    parts[:weeks], distance = distance.divmod(604_800)
+    parts[:days], distance = distance.divmod(86_400)
+    parts[:hours], distance = distance.divmod(3600)
+    parts[:minutes], parts[:seconds] = distance.divmod(60)
+    
+    output = []
+    parts.each do |name, value|
+      next if value == 0
+      name = name.to_s.singularize if value.between?(-1, 1)
+      output << "%d %s" % [value, name]
+    end
+    output.join(" ")
+  end
 end

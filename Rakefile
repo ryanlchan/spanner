@@ -1,28 +1,28 @@
+require 'rubygems'
+require 'rake'
+
+require 'rspec/core/rake_task'
+$:.push File.expand_path("../lib", __FILE__)
+
+task :default => :spec
+
+RSpec::Core::RakeTask.new(:spec)
+
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
-    s.name = "spanner"
-    s.description = s.summary = "Natural language time span parsing"
-    s.email = "joshbuddy@gmail.com"
-    s.homepage = "http://github.com/joshbuddy/spanner"
-    s.authors = ["Joshua Hull"]
+    s.name = "spanner-lfittl"
+    s.description = s.summary = "Natural language time span parsing & formatting"
+    s.email = "lukas@fittl.com"
+    s.homepage = "http://github.com/lfittl/spanner"
+    s.authors = ["Lukas Fittl", "Joshua Hull"]
     s.files = FileList["[A-Z]*", "{lib,spec}/**/*"]
+    s.add_dependency 'activesupport'
+    s.add_development_dependency 'jeweler'
+    s.add_development_dependency 'rake'
+    s.add_development_dependency 'rspec'
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
-  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+  puts "Jeweler not available. Run 'bundle install'."
 end
-
-require 'spec'
-require 'spec/rake/spectask'
-task :spec => 'spec:all'
-namespace(:spec) do
-  Spec::Rake::SpecTask.new(:all) do |t|
-    t.spec_opts ||= []
-    t.spec_opts << "-rubygems -rdirge"
-    t.spec_opts << "--options" << "spec/spec.opts"
-    t.spec_files = FileList['spec/**/*_spec.rb']
-  end
-
-end
-
