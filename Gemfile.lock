@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    spanner-lfittl (0.0.3)
+    spanner-lfittl (0.0.4)
       activesupport
       spanner-lfittl
 

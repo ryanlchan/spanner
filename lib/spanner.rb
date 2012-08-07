@@ -19,6 +19,7 @@ class Spanner
     @value = value
     @on_error = opts && opts.key?(:on_error) ? opts[:on_error] : :raise
     @length_of_month = opts && opts[:length_of_month]
+    @biggest_unit = ((opts && opts[:biggest_unit]) || "years").to_s.downcase.to_sym
     
     @from = if opts && opts.key?(:from)
       case opts[:from]
@@ -98,13 +99,16 @@ class Spanner
   def format(distance)
     distance = distance.to_i
     
+    units = [:years, :months, :weeks, :days, :hours, :minutes]
+    biggest_unit = units.index(@biggest_unit) || 0
+    
     parts = {}
-    parts[:years], distance = distance.divmod(31_556_926)
-    parts[:months], distance = distance.divmod(length_of_month)
-    parts[:weeks], distance = distance.divmod(604_800)
-    parts[:days], distance = distance.divmod(86_400)
-    parts[:hours], distance = distance.divmod(3600)
-    parts[:minutes], parts[:seconds] = distance.divmod(60)
+    parts[:years], distance = distance.divmod(31_556_926) unless biggest_unit > units.index(:years)
+    parts[:months], distance = distance.divmod(length_of_month) unless biggest_unit > units.index(:months)
+    parts[:weeks], distance = distance.divmod(604_800) unless biggest_unit > units.index(:weeks)
+    parts[:days], distance = distance.divmod(86_400) unless biggest_unit > units.index(:days)
+    parts[:hours], distance = distance.divmod(3600) unless biggest_unit > units.index(:hours)
+    parts[:minutes], parts[:seconds] = distance.divmod(60) unless biggest_unit > units.index(:minutes)
     
     output = []
     parts.each do |name, value|

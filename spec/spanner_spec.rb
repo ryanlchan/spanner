@@ -55,4 +55,13 @@ describe Spanner, "format" do
       Spanner.format(input).should == output
     end
   end
+  
+  it "should be possible to restrict the biggest unit" do
+    Spanner.format(3600*24*50).should == "1 month 2 weeks 5 days"
+    Spanner.format(3600*24*50, :biggest_unit => :days).should == "50 days"
+  end
+  
+  it "should default to no restriction if invalid biggest unit is supplied" do
+    Spanner.format(3600*24*14, :biggest_unit => "LALA").should == "2 weeks"
+  end
 end

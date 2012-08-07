@@ -23,6 +23,9 @@ or add this to your Gemfile:
   Spanner.format(83520)
   => '23 hours 12 minutes'
   
+  Spanner.format(83520, :biggest_unit => :minutes)
+  => '1392 minutes'
+  
 == Authors
 
 Original author:
