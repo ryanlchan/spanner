@@ -42,7 +42,7 @@ class Spanner
   end
   
   def error(err)
-    if on_error == :raise
+    if @on_error == :raise
       raise ParseError.new(err)
     end
   end
